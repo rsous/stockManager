@@ -1,0 +1,28 @@
+
+body {
+  background-color: #f8f9fa;
+}
+
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-warning-critical {
+  background-color: #f8d7da;
+  color: #830411;
+  font-weight: bold;
+}
+
+.table-danger {
+  color: #b60315;
+  font-weight: 900;
+}
+
+.validade-proxima {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.btn-sm {
+  margin-right: 5px;
+}

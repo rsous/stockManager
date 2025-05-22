@@ -1,0 +1,13 @@
+[build]
+  command = "echo 'Frontend estático: nada para construir'"
+  publish = "frontend/"  # Pasta onde está o index.html
+  functions = "backend/"  # (Opcional) Se usar Netlify Functions
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://SEU-BACKEND.railway.app/api/:splat"  # Substituir pela URL do Railway
+  status = 200
+  force = true
+
+[dev]
+  targetPort = 3000  # Porta do backend local (para desenvolvimento)
