@@ -5,7 +5,6 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const app = express();
-const cache = require('express-redis-cache')();
 
 // Configuração básica
 app.use(cors());
@@ -23,7 +22,7 @@ pool.query('SELECT NOW()')
 
 // Rotas da API
 // GET todos os ingredientes
-app.get('/api/ingredientes', cache.route(), async (req, res) => {
+app.get('/api/ingredientes', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM ingredientes ORDER BY nome');
     res.json(rows);
@@ -34,7 +33,7 @@ app.get('/api/ingredientes', cache.route(), async (req, res) => {
 });
 
 // GET um ingrediente específico
-app.get('/api/ingredientes/:id', cache.route(), async (req, res) => {
+app.get('/api/ingredientes/:id', async (req, res) => {
   const ingredientId = parseInt(req.params.id);
   
   // Validação do ID
