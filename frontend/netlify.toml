@@ -1,7 +1,7 @@
 [build]
   command = "echo 'Frontend estático: nada para construir'"
   publish = "frontend/"  # Pasta onde está o index.html
-  functions = "backend/"  # (Opcional) Se usar Netlify Functions
+  ignore = "backend/*"  # Isso impede que o Netlify tente processar o backend
 
 [[redirects]]
   from = "/api/*"
