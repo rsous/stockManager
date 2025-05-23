@@ -1,7 +1,7 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const API_URL = window.API_URL || "https://stockmanager-production-aa4d.up.railway.app/api";
+  const API_URL = "https://stockmanager-production-aa4d.up.railway.app/api";
   const form = document.getElementById('form-ingrediente');
   const tabela = document.getElementById('tabela-estoque');
   const alertasDiv = document.getElementById('alertas');
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Função para carregar estoque (atualizada)
   async function carregarEstoque() {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(API_URL + '/ingredientes');
       
       if (!response.ok) {
         throw new Error('Erro ao carregar estoque');
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Função para adicionar ingrediente (atualizada)
   async function adicionarIngrediente(ingrediente) {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_URL + '/ingredientes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Função para atualizar quantidade (atualizada)
   async function atualizarQuantidade(id, novaQuantidade) {
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${API_URL}/ingredientes/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

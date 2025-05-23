@@ -12,13 +12,38 @@ app.use(express.json());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Teste de conexão
 pool.query('SELECT NOW()')
   .then(() => console.log('Conectado ao PostgreSQL com sucesso!'))
   .catch(err => console.error('Erro ao conectar ao PostgreSQL:', err));
+
+  // Criação da tabela
+async function criarTabela() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS ingredientes (
+        id SERIAL PRIMARY KEY,
+        nome VARCHAR(255) NOT NULL,
+        quantidade DECIMAL NOT NULL,
+        unidade VARCHAR(50) NOT NULL,
+        quantidade_minima DECIMAL NOT NULL,
+        validade DATE,
+        fornecedor VARCHAR(255),
+        ultima_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('Tabela verificada/criada com sucesso');
+  } catch (err) {
+    console.error('Erro ao criar tabela:', err);
+  }
+}
+
+criarTabela();
 
 // Rotas da API
 
