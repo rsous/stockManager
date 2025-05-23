@@ -130,8 +130,8 @@ app.post('/api/ingredientes', async (req, res) => {
   }
 });
 
-// PUT atualizar ingrediente
-app.put('/api/ingredientes/:id', async (req, res) => {
+// Atualizar quantidade
+app.put('/api/ingredientes/:id/quantidade', async (req, res) => {
   const { quantidade } = req.body;
   
   try {
@@ -147,6 +147,32 @@ app.put('/api/ingredientes/:id', async (req, res) => {
   } catch (err) {
     console.error('Erro no PostgreSQL:', err);
     res.status(500).json({ error: 'Erro ao atualizar quantidade' });
+  }
+});
+
+// Atualização completa
+app.put('/api/ingredientes/:id', async (req, res) => {
+  const { nome, quantidade, unidade, quantidade_minima, validade, fornecedor } = req.body;
+  
+  try {
+    const { rows } = await pool.query(
+      `UPDATE ingredientes 
+       SET nome = $1, quantidade = $2, unidade = $3, 
+           quantidade_minima = $4, validade = $5, fornecedor = $6,
+           ultima_atualizacao = CURRENT_TIMESTAMP
+       WHERE id = $7
+       RETURNING *`,
+      [nome, quantidade, unidade, quantidade_minima, validade, fornecedor, req.params.id]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Ingrediente não encontrado' });
+    }
+    
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Erro no PostgreSQL:', err);
+    res.status(500).json({ error: 'Erro ao atualizar ingrediente' });
   }
 });
 

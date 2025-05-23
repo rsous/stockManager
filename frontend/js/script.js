@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-ingrediente');
   const tabela = document.getElementById('tabela-estoque');
   const alertasDiv = document.getElementById('alertas');
+  const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
 
   // Carregar estoque inicial - versão corrigida
   carregarEstoque().catch(error => {
@@ -59,17 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Verificar estoque baixo
       const estoqueBaixo = parseFloat(item.quantidade) <= parseFloat(item.quantidade_minima);
-      const estoqueZerado = item.quantidade == 0;
+      const estoqueZerado = parseFloat(item.quantidade) == 0;
 
       if (estoqueZerado) {
         alertas.push(`Sem estoque de ${item.nome}`);
         tr.classList.add('table-warning-critical');
       } else if (estoqueBaixo) {
-        console.log(`Estoque baixo`)
-        console.log(typeof item.quantidade);
-
-        console.log(`Item quantidade: ${item.quantidade}`)
-        console.log(`Item quantidade mínima: ${item.quantidade_minima}`)
         alertas.push(`Estoque baixo de ${item.nome}`);
         tr.classList.add('table-warning');
       }
@@ -90,15 +86,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       tr.innerHTML = `
-      <td>${item.nome}</td>
-      <td>${item.quantidade} ${item.unidade}</td>
-      <td>${item.quantidade_minima} ${item.unidade}</td>
-      <td>
-        <button class="btn qtd btn-sm btn-outline-secondary" data-id="${item.id}" data-change="-0.5">-0.5</button>
-        <button class="btn qtd btn-sm btn-outline-danger" data-id="${item.id}" data-change="-1">-1</button>
-        <button class="btn qtd btn-sm btn-outline-success" data-id="${item.id}" data-change="1">+1</button>
-      </td>
-      `; 
+        <td>${item.nome}</td>
+        <td>${item.quantidade} ${item.unidade}</td>
+        <td>${item.quantidade_minima} ${item.unidade}</td>
+        <td>
+          <button class="btn qtd btn-sm btn-outline-danger" data-id="${item.id}" data-change="-1">-1</button>
+          <button class="btn qtd btn-sm btn-outline-success" data-id="${item.id}" data-change="1">+1</button>
+          <button class="btn btn-sm btn-outline-primary btn-editar" data-id="${item.id}">Editar</button>
+        </td>
+      `;
       
       tabela.appendChild(tr);
     });
@@ -160,11 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Função para atualizar quantidade (atualizada)
   async function atualizarQuantidade(id, novaQuantidade) {
     try {
-      const response = await fetch(`${API_URL}/ingredientes/${id}`, {
+      const response = await fetch(`${API_URL}/ingredientes/${id}/quantidade`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantidade: novaQuantidade })
       });
 
@@ -181,5 +175,66 @@ document.addEventListener('DOMContentLoaded', () => {
       throw error;
     }
   }
+
+  document.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('btn-editar')) {
+    const id = e.target.getAttribute('data-id');
+    await abrirModalEdicao(id);
+  }
+  });
+
+  async function abrirModalEdicao(id) {
+    try {
+      const response = await fetch(`${API_URL}/ingredientes/${id}`);
+      if (!response.ok) throw new Error('Erro ao buscar ingrediente');
+      
+      const ingrediente = await response.json();
+      
+      // Preenche o formulário
+      document.getElementById('editar-id').value = ingrediente.id;
+      document.getElementById('editar-nome').value = ingrediente.nome;
+      document.getElementById('editar-quantidade').value = ingrediente.quantidade;
+      document.getElementById('editar-unidade').value = ingrediente.unidade;
+      document.getElementById('editar-quantidade_minima').value = ingrediente.quantidade_minima;
+      document.getElementById('editar-validade').value = ingrediente.validade || '';
+      document.getElementById('editar-fornecedor').value = ingrediente.fornecedor || '';
+      
+      editarModal.show();
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao carregar dados para edição');
+    }
+  }
+
+  document.getElementById('salvar-edicao').addEventListener('click', async () => {
+    const ingrediente = {
+      id: document.getElementById('editar-id').value,
+      nome: document.getElementById('editar-nome').value,
+      quantidade: parseFloat(document.getElementById('editar-quantidade').value),
+      unidade: document.getElementById('editar-unidade').value,
+      quantidade_minima: parseFloat(document.getElementById('editar-quantidade_minima').value),
+      validade: document.getElementById('editar-validade').value || null,
+      fornecedor: document.getElementById('editar-fornecedor').value || null
+    };
+
+    try {
+      const response = await fetch(`${API_URL}/ingredientes/${ingrediente.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(ingrediente)
+      });
+
+      if (!response.ok) throw new Error('Erro ao atualizar ingrediente');
+
+      editarModal.hide();
+      await carregarEstoque();
+      alert('Ingrediente atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao atualizar ingrediente');
+    }
+  });
 });
 
