@@ -21,6 +21,7 @@ pool.query('SELECT NOW()')
   .catch(err => console.error('Erro ao conectar ao PostgreSQL:', err));
 
 // Rotas da API
+
 // GET todos os ingredientes
 app.get('/api/ingredientes', async (req, res) => {
   try {
