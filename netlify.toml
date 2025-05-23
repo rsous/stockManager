@@ -5,7 +5,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://SEU-BACKEND.railway.app/api/:splat"  # Substituir pela URL do Railway
+  to = "https://stockmanager-production-aa4d.up.railway.app/api/:splat"  # Substituir pela URL do Railway
   status = 200
   force = true
 

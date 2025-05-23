@@ -1,7 +1,7 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const API_URL = 'https://stockmanager-production-aa4d.up.railway.app';
+  const API_URL = process.env.API_URL;
   const form = document.getElementById('form-ingrediente');
   const tabela = document.getElementById('tabela-estoque');
   const alertasDiv = document.getElementById('alertas');
