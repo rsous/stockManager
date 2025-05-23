@@ -65,6 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
         alertas.push(`Sem estoque de ${item.nome}`);
         tr.classList.add('table-warning-critical');
       } else if (estoqueBaixo) {
+        console.log(`Estoque baixo`)
+        console.log(`Item quantidade: ${item.quantidade}`)
+        console.log(`Item quantidade mínima: ${item.quantidade_minima}`)
         alertas.push(`Estoque baixo de ${item.nome}`);
         tr.classList.add('table-warning');
       }
@@ -113,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const buttons = document.querySelectorAll('.btn.qtd');
 
     buttons.forEach(button => {
-      console.log(button);
       button.addEventListener('click', async function() {
         const id = this.getAttribute('data-id');
         const change = parseFloat(this.getAttribute('data-change'));
