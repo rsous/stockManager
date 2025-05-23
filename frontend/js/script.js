@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const tr = document.createElement('tr');
       
       // Verificar estoque baixo
-      const estoqueBaixo = item.quantidade <= item.quantidade_minima;
+      const estoqueBaixo = parseFloat(item.quantidade) <= parseFloat(item.quantidade_minima);
       const estoqueZerado = item.quantidade == 0;
 
       if (estoqueZerado) {
@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.classList.add('table-warning-critical');
       } else if (estoqueBaixo) {
         console.log(`Estoque baixo`)
+        console.log(typeof item.quantidade);
+
         console.log(`Item quantidade: ${item.quantidade}`)
         console.log(`Item quantidade mínima: ${item.quantidade_minima}`)
         alertas.push(`Estoque baixo de ${item.nome}`);
