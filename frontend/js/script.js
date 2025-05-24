@@ -183,6 +183,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   });
 
+  function formatarParaInputDate(dataString) {
+    if (!dataString) return '';
+    
+    // Remove a parte do timezone e milissegundos se existir
+    const dataISO = dataString.split('.')[0];
+    const data = new Date(dataISO);
+    
+    if (isNaN(data.getTime())) return '';
+    
+    // Formata como YYYY-MM-DD (formato esperado pelo input date)
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    
+    return `${ano}-${mes}-${dia}`;
+  }
+
   async function abrirModalEdicao(id) {
     try {
       const response = await fetch(`${API_URL}/ingredientes/${id}`);
@@ -196,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('editar-quantidade').value = ingrediente.quantidade;
       document.getElementById('editar-unidade').value = ingrediente.unidade;
       document.getElementById('editar-quantidade_minima').value = ingrediente.quantidade_minima;
-      document.getElementById('editar-validade').value = ingrediente.validade || '';
+      document.getElementById('editar-validade').value = formatarParaInputDate(ingrediente.validade);
       document.getElementById('editar-fornecedor').value = ingrediente.fornecedor || '';
       
       editarModal.show();
