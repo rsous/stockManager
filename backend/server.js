@@ -6,7 +6,6 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const app = express();
 
-// Configuração básica
 app.use(cors());
 app.use(express.json());
 
@@ -22,7 +21,6 @@ pool.query('SELECT NOW()')
   .then(() => console.log('Conectado ao PostgreSQL com sucesso!'))
   .catch(err => console.error('Erro ao conectar ao PostgreSQL:', err));
 
-  // Criação da tabela
 async function criarTabela() {
   try {
     await pool.query(`
@@ -44,8 +42,6 @@ async function criarTabela() {
 }
 
 criarTabela();
-
-// Rotas da API
 
 // GET todos os ingredientes
 app.get('/api/ingredientes', async (req, res) => {
@@ -92,7 +88,7 @@ app.get('/api/ingredientes/:id', async (req, res) => {
     // Formata a resposta
     const ingrediente = {
       ...rows[0],
-      // Adiciona links HATEOAS (opcional)
+      // Adiciona links HATEOAS
       _links: {
         self: `/api/ingredientes/${ingredientId}`,
         all: '/api/ingredientes'
@@ -105,7 +101,7 @@ app.get('/api/ingredientes/:id', async (req, res) => {
     
     res.status(500).json({
       error: 'Erro no banco de dados',
-      requestId: req.id, // Requer middleware para gerar IDs de requisição
+      requestId: req.id,
       timestamp: new Date().toISOString()
     });
   }
@@ -217,8 +213,7 @@ app.delete('/api/ingredientes/:id', async (req, res) => {
   } catch (err) {
     console.error(`Erro ao excluir ingrediente ${ingredientId}:`, err);
     
-    // Tratamento especial para erros de FK (se houver relacionamentos)
-    if (err.code === '23503') { // Código de erro de FK constraint
+    if (err.code === '23503') {
       return res.status(409).json({
         error: 'Conflito',
         message: 'Este ingrediente não pode ser removido pois está em uso'
@@ -233,11 +228,8 @@ app.delete('/api/ingredientes/:id', async (req, res) => {
   }
 });
 
-// Rota para o frontend
-
-
-// Iniciar servidor
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

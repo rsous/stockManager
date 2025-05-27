@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertasDiv = document.getElementById('alertas');
   const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
 
-  // Carregar estoque inicial - versão corrigida
   carregarEstoque().catch(error => {
     console.error("Falha ao carregar estoque inicial:", error);
   });
@@ -28,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     adicionarIngrediente(ingrediente);
   });
 
-  // Função para carregar estoque (atualizada)
   async function carregarEstoque() {
     try {
       const response = await fetch(API_URL + '/ingredientes');
@@ -38,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   
       const ingredientes = await response.json();
-      renderizarEstoque(ingredientes); // Esta linha estava faltando!
+      renderizarEstoque(ingredientes);
     } catch (error) {
       console.error('Erro ao carregar estoque:', error);
       alertasDiv.innerHTML = `
@@ -49,16 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Função para renderizar a tabela
   function renderizarEstoque(ingredientes) {
-    console.log('Dados recebidos para renderização:', ingredientes); // Adicione este log
+    console.log('Dados recebidos para renderização:', ingredientes);
     tabela.innerHTML = '';
     let alertas = [];
 
     ingredientes.forEach(item => {
       const tr = document.createElement('tr');
-      
-      // Verificar estoque baixo
       const estoqueBaixo = parseFloat(item.quantidade) <= parseFloat(item.quantidade_minima);
       const estoqueZerado = parseFloat(item.quantidade) == 0;
 
@@ -70,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.classList.add('table-warning');
       }
       
-      // Verificar validade
       if (item.validade) {
         const hoje = new Date();
         const validade = new Date(item.validade);
@@ -127,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Função para adicionar ingrediente (atualizada)
   async function adicionarIngrediente(ingrediente) {
     try {
       const response = await fetch(API_URL + '/ingredientes', {
@@ -146,14 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       console.log('Ingrediente adicionado:', data);
       form.reset();
-      await carregarEstoque(); // Aguarda o recarregamento do estoque
+      await carregarEstoque();
     } catch (error) {
       console.error('Erro:', error);
       alert(`Erro: ${error.message}`);
     }
   }
 
-  // Função para atualizar quantidade (atualizada)
   async function atualizarQuantidade(id, novaQuantidade) {
     try {
       const response = await fetch(`${API_URL}/ingredientes/${id}/quantidade`, {
@@ -167,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(errorData.error || 'Erro ao atualizar quantidade');
       }
 
-      carregarEstoque(); // Recarrega a tabela
+      carregarEstoque();
 
       return await response.json();
     } catch (error) {
@@ -186,13 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function formatarParaInputDate(dataString) {
     if (!dataString) return '';
     
-    // Remove a parte do timezone e milissegundos se existir
     const dataISO = dataString.split('.')[0];
     const data = new Date(dataISO);
     
     if (isNaN(data.getTime())) return '';
     
-    // Formata como YYYY-MM-DD (formato esperado pelo input date)
     const ano = data.getFullYear();
     const mes = String(data.getMonth() + 1).padStart(2, '0');
     const dia = String(data.getDate()).padStart(2, '0');
